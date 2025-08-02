@@ -91,7 +91,7 @@ class Collection implements JsonSerializable
      * @param string|null $key KEY
      * @return void
      */
-    public function push($value, string $key = null): void
+    public function push($value, ?string $key = null): void
     {
         if (is_null($key)) {
             $this->items[] = $value;
@@ -107,7 +107,7 @@ class Collection implements JsonSerializable
      * @param string|null $key KEY
      * @return void
      */
-    public function unshift($value, string $key = null): void
+    public function unshift($value, ?string $key = null): void
     {
         if (is_null($key)) {
             array_unshift($this->items, $value);
