@@ -3,6 +3,7 @@
 namespace Ledc\SupportSdk;
 
 use InvalidArgumentException;
+use LogicException;
 use Throwable;
 
 /**
@@ -61,6 +62,25 @@ final class Utils
     {
         [$timestamp, $mSec] = explode('.', microtime(true));
         return date('YmdHis', (int)$timestamp) . str_pad($mSec, 4, '0');
+    }
+
+    /**
+     * 生成唯一随机字符串（基于时间戳和随机数）
+     * - 可以作为SessionId或唯一标识符
+     * @param int $random_bytes_length 随机字节数的长度
+     * @return string
+     */
+    public static function generateRandom(int $random_bytes_length = 8): string
+    {
+        $length = min(8, $random_bytes_length);
+        try {
+            return bin2hex(pack('d', microtime(true)) . random_bytes($length));
+        } catch (Throwable $e) {
+            if (function_exists('openssl_random_pseudo_bytes')) {
+                return bin2hex(pack('d', microtime(true)) . openssl_random_pseudo_bytes($length));
+            }
+            throw new LogicException('Cannot generate random bytes, ' . $e->getMessage());
+        }
     }
 
     /**
