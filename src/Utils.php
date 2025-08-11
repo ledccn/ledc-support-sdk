@@ -72,7 +72,7 @@ final class Utils
      */
     public static function generateRandom(int $random_bytes_length = 8): string
     {
-        $length = min(8, $random_bytes_length);
+        $length = max(8, $random_bytes_length);
         try {
             return bin2hex(pack('d', microtime(true)) . random_bytes($length));
         } catch (Throwable $e) {
