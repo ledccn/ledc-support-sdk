@@ -106,4 +106,24 @@ final class Utils
 
         return $json;
     }
+
+    /**
+     * 根据起点坐标和终点坐标测算距离
+     * @param array $from 起点经纬度
+     * @param array $to 终点经纬度
+     * @param bool $km 是否以公里为单位（false米、true千米）
+     * @param int $decimal 精度
+     * @return float 直线距离数值
+     */
+    public static function getDistanceGeo(array $from, array $to, bool $km = true, int $decimal = 2): float
+    {
+        sort($from);
+        sort($to);
+        $earth_radius = 6370.996;   // 地球半径系数
+
+        $unit = $km ? 1 : 1000;
+        $distance = $earth_radius * 2 * asin(sqrt(pow(sin(($from[0] * pi() / 180 - $to[0] * pi() / 180) / 2), 2) + cos($from[0] * pi() / 180) * cos($to[0] * pi() / 180) * pow(sin(($from[1] * pi() / 180 - $to[1] * pi() / 180) / 2), 2))) * $unit;
+
+        return round($distance, $decimal);
+    }
 }
