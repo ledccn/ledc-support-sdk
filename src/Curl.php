@@ -249,13 +249,14 @@ class Curl
     /**
      * Set the json payload informations to the postfield curl option.
      *
-     * @param array $data The data to be sent.
+     * @param object|array|string $data The data to be sent.
      * @return void
      */
-    protected function prepareJsonPayload(array $data): void
+    protected function prepareJsonPayload($data): void
     {
         $this->setOpt(CURLOPT_POST, true);
-        $this->setOpt(CURLOPT_POSTFIELDS, json_encode($data));
+        $this->setOpt(CURLOPT_POSTFIELDS, is_string($data) ? $data : json_encode($data));
+        $this->setContentType('application/json; charset=UTF-8');
     }
 
     /**
@@ -800,6 +801,58 @@ class Curl
         $this->setOpt(CURLOPT_SSL_VERIFYPEER, $verifyPeer);
         //0 时不检查名称（SSL 对等证书中的公用名称字段或主题备用名称（Subject Alternate Name，简称 SNA）字段是否与提供的主机名匹配）
         $this->setOpt(CURLOPT_SSL_VERIFYHOST, $verifyHost);
+        return $this;
+    }
+
+    /**
+     * 设置Content-Type
+     * - application/json; charset=UTF-8
+     * - application/x-www-form-urlencoded; charset=UTF-8
+     * @param string $value
+     * @return $this
+     */
+    public function setContentType(string $value = 'application/json; charset=UTF-8'): self
+    {
+        return $this->setHeader('Content-Type', $value);
+    }
+
+    /**
+     * 设置X-Requested-With
+     * @param string $value
+     * @return $this
+     */
+    public function setXRequestedWith(string $value = 'XMLHttpRequest'): self
+    {
+        return $this->setHeader('X-Requested-With', $value);
+    }
+
+    /**
+     * 批量设置HTTP请求头的cookie
+     * @param string|array $cookies
+     * @return $this
+     */
+    public function setCookies($cookies): self
+    {
+        if (is_string($cookies)) {
+            $this->setOpt(CURLOPT_COOKIE, $cookies);
+        } else {
+            foreach ($cookies as $key => $value) {
+                $this->setCookie($key, $value);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * 批量设置headers
+     * @param array $herders
+     * @return $this
+     */
+    public function setHeaders(array $herders): self
+    {
+        foreach ($herders as $key => $value) {
+            $this->setHeader($key, $value);
+        }
         return $this;
     }
 
